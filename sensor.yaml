@@ -1,0 +1,46 @@
+esphome:
+  name: esp32multi
+  platform: ESP32
+  board: wemos_d1_mini32
+  includes:
+    - veml6070_custom_sensor.h
+  libraries:
+    - Wire
+    - "https://github.com/adafruit/Adafruit_VEML6070"
+    - SPI
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+  use_address: 192.168.178.43
+
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+api:
+
+ota:
+
+i2c:
+  - id: bus2
+    sda: 21
+    scl: 22
+    scan: True
+
+sensor:
+  - platform: wifi_signal
+    name: esp32_multi WiFi Signal
+    update_interval: 60s
+
+  - platform: custom
+    lambda: |-
+      auto veml6070 = new VEML6070CustomSensor();
+      App.register_component(veml6070);
+      return {veml6070};
+    sensors:
+      name: "UV"
+      id: uv
+      unit_of_measurement: "mW/m²"
+      accuracy_decimals: 2
+
